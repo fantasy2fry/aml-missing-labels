@@ -350,3 +350,10 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/python,macos,windows,jetbrains
 
 # Project Specific
+code/data/raw/*
+code/data/processed/*
+!code/data/raw/.gitkeep
+!code/data/processed/.gitkeep
+
+report/*
+!report/main.tex
