@@ -30,7 +30,7 @@ Quick start
 
     # Single dataset + single scheme
     result  = get_dataset_with_missing('breast_cancer', 'MAR2', missing_rate=0.30)
-    X       = result['X']        # np.ndarray - prepared features
+    X       = result['X']        # np.ndarray - features (unscaled)
     y       = result['y']        # np.ndarray - true labels {0, 1}
     y_obs   = result['y_obs']    # np.ndarray - labels with -1 for missing
     summary = result['summary']  # pd.DataFrame - missing-rate breakdown
@@ -49,7 +49,6 @@ from typing import Literal
 
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
 
@@ -192,28 +191,19 @@ def _binarise_target(
 class DatasetPreparator:
     """Prepare a raw dataset for logistic regression experiments.
 
-    Steps performed
-    ---------------
-    1. Binarise the target using dataset-specific rules.
-    2. Standardise features (zero mean, unit variance) if scale=True.
-
-    Parameters
-    ----------
-    scale : bool, default True
-        Whether to apply StandardScaler to the features.
+    The sole responsibility of this class is binarising the target
+    using dataset-specific rules and converting DataFrames to numpy arrays.
+    Feature scaling is intentionally excluded and must be applied
+    at a later pipeline stage.
 
     Attributes
     ----------
     feature_names_ : list[str]
-        Column names of the input feature matrix.
-    scaler_ : StandardScaler or None
-        Fitted scaler, or None when scale=False.
+        Column names of the input feature matrix (set after fit_transform).
     """
 
-    def __init__(self, scale: bool = True) -> None:
-        self.scale = scale
+    def __init__(self) -> None:
         self.feature_names_: list[str] = []
-        self.scaler_: StandardScaler | None = None
 
     def fit_transform(
         self,
@@ -221,7 +211,7 @@ class DatasetPreparator:
         y: pd.Series | pd.DataFrame,
         dataset_name: str = "",
     ) -> tuple[np.ndarray, np.ndarray]:
-        """Fit preparator on (X, y) and return numpy arrays.
+        """Convert (X, y) to numpy arrays and binarise the target.
 
         Parameters
         ----------
@@ -235,22 +225,16 @@ class DatasetPreparator:
         Returns
         -------
         X_out : np.ndarray, shape (n_samples, n_features)
+            Feature matrix as a plain float array (unscaled).
         y_out : np.ndarray, shape (n_samples,), values in {0, 1}
         """
-        X = X.copy()
-        y_bin = _binarise_target(y, dataset_name)
-
         self.feature_names_ = list(X.columns)
-        X_arr = X.values.astype(float)
-
-        if self.scale:
-            self.scaler_ = StandardScaler()
-            X_arr = self.scaler_.fit_transform(X_arr)
-
-        return X_arr, y_bin
+        X_out = X.values.astype(float)
+        y_out = _binarise_target(y, dataset_name)
+        return X_out, y_out
 
     def transform(self, X: pd.DataFrame) -> np.ndarray:
-        """Apply fitted transformation to unseen data (e.g. test set).
+        """Convert a new feature DataFrame to a float array.
 
         Parameters
         ----------
@@ -259,12 +243,9 @@ class DatasetPreparator:
 
         Returns
         -------
-        np.ndarray
+        np.ndarray (unscaled)
         """
-        X_arr = X[self.feature_names_].values.astype(float)
-        if self.scaler_ is not None:
-            X_arr = self.scaler_.transform(X_arr)
-        return X_arr
+        return X[self.feature_names_].values.astype(float)
 
 
 # ===========================================================================
@@ -296,7 +277,7 @@ def generate_missing_labels(
     Parameters
     ----------
     X : np.ndarray, shape (n, p)
-        Feature matrix (standardised).
+        Feature matrix.
     y : np.ndarray, shape (n,)
         True binary labels {0, 1}.
     scheme : str
@@ -433,7 +414,7 @@ def get_dataset_with_missing(
     Returns
     -------
     dict with keys:
-        'X'          - np.ndarray, standardised features
+        'X'          - np.ndarray, features as float array (unscaled)
         'y'          - np.ndarray, true binary labels {0, 1}
         'y_obs'      - np.ndarray, observed labels (-1 = missing)
         'preparator' - fitted DatasetPreparator instance
@@ -455,7 +436,7 @@ def get_dataset_with_missing(
     print(f"{'='*60}")
 
     raw  = load_dataset(dataset_name)
-    prep = DatasetPreparator(scale=True)
+    prep = DatasetPreparator()
     X, y = prep.fit_transform(raw["X"], raw["y"], dataset_name=dataset_name)
 
     print(
@@ -501,7 +482,7 @@ def get_all_schemes_for_dataset(
     Returns
     -------
     dict with keys:
-        'X'          - np.ndarray, standardised features
+        'X'          - np.ndarray, features as float array (unscaled)
         'y'          - np.ndarray, true labels {0, 1}
         'y_obs'      - dict mapping scheme name -> y_obs np.ndarray
         'preparator' - fitted DatasetPreparator
@@ -516,7 +497,7 @@ def get_all_schemes_for_dataset(
     _validate_dataset_name(dataset_name)
 
     raw  = load_dataset(dataset_name)
-    prep = DatasetPreparator(scale=True)
+    prep = DatasetPreparator()
     X, y = prep.fit_transform(raw["X"], raw["y"], dataset_name=dataset_name)
 
     y_obs_dict: dict[str, np.ndarray] = {
