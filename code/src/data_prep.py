@@ -538,3 +538,30 @@ def _validate_scheme(scheme: str) -> None:
             f"Unknown scheme '{scheme}'.\n"
             f"Available: {AVAILABLE_SCHEMES}"
         )
+
+# ===========================================================================
+# 8. Convertion to Partial Labeling
+# ===========================================================================
+
+def convert_to_pl(y: np.ndarray) -> np.ndarray:
+    """
+    Convert 1D label array with values {-1, 0, 1} into 2D partial label matrix.
+
+    Mapping:
+        0  -> [1, 0]
+        1  -> [0, 1]
+       -1  -> [1, 1]
+
+    Parameters
+    -------
+    y : np.ndarray
+        Labels with missing values {0, 1, -1}.
+
+    Returns
+    -------
+    np.ndarray of shape (n_samples, 2)
+    """
+    new_y = np.empty((y.shape[0],2),dtype=int)
+    new_y[:, 0] = (y != 1)
+    new_y[:, 1] = (y != 0)
+    return new_y

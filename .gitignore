@@ -357,3 +357,5 @@ code/data/processed/*
 
 report/*
 !report/main.tex
+
+test*
