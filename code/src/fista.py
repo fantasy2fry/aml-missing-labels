@@ -121,6 +121,9 @@ class FistaLogisticRegression:
         Supported measures: 'recall', 'precision', 'f-measure', 
         'balanced_accuracy', 'roc_auc', 'pr_auc'.
         """
+        if not hasattr(self, "coefs_path_") or not self.coefs_path_:
+            raise ValueError("This FistaLogisticRegression instance is not fitted yet. Call 'fit' before using 'validate'.")
+            
         self.last_measure_ = measure
         self.validation_scores_ = {}
         
