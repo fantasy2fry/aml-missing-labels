@@ -58,23 +58,24 @@ def main():
         for measure in measures:
             print(f"--- Measure: '{measure}' ---")
             
-            # Validate FISTA
+            # Validate FISTA regularization path to select the best lambda
             best_lambda, best_score = fista_model.validate(X_valid, y_valid, measure=measure)
             print(f"[FISTA] Best lambda: {best_lambda:.5f}")
             
-            # Measure strictly fair single-fit time
+            # Measure strictly fair single-fit time using only the selected lambda
             single_fista = FistaLogisticRegression(lambdas=[best_lambda], max_iter=1000, tol=1e-4)
             start_fista_single = time.time()
             single_fista.fit(X_train, y_train)
             fista_single_time = time.time() - start_fista_single
+            single_fista.validate(X_valid, y_valid, measure=measure)
 
-            # Predict on Test set
-            fista_probas = fista_model.predict_proba(X_test)[:, 1]
+            # Predict on Test set with the same single-fit model used for timing
+            fista_probas = single_fista.predict_proba(X_test)[:, 1]
             fista_preds = (fista_probas >= 0.5).astype(int)
             
             fista_roc = roc_auc_score(y_test, fista_probas)
             fista_f1 = f1_score(y_test, fista_preds)
-            fista_sparsity = np.mean(np.abs(fista_model.coef_) < 1e-5) 
+            fista_sparsity = np.mean(np.abs(single_fista.coef_) < 1e-5) 
             
             # Generate Plots
             plot1 = os.path.join(plots_dir, f"fista_measure_{dataset_name}_{measure}.png")
