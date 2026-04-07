@@ -54,10 +54,7 @@ def create_plots(summary_df: pd.DataFrame) -> list[Path]:
     saved_paths: list[Path] = []
 
     # Keep all non-saute methods and only the saute_half configuration.
-    summary_df = summary_df[
-        (summary_df["method"] != "saute")
-        | (summary_df["saute_n_vars_variant"] == "half")
-    ].copy()
+    summary_df = summary_df.copy()
 
     datasets = sorted(summary_df["dataset"].dropna().unique())
     schemes = sorted(summary_df["scheme"].dropna().unique())

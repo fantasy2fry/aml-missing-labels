@@ -19,7 +19,7 @@ DEFAULT_METHODS = ("labeled_only", "novel", "oracle", "saute")
 DEFAULT_MISSING_RATES = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)
 DEFAULT_SEEDS = (22, 42, 44, 107, 123, 2026, 2070, 2137, 2221, 4244, 35_041_872, 61_419_295)
 DEFAULT_NOVEL_N_ITER = 20
-SAUTE_N_VARS_VARIANTS = ("half") #("one", "half", "all")
+SAUTE_N_VARS_VARIANTS = ("half",) #("one", "half", "all")
 
 
 def _default_n_jobs() -> int:
