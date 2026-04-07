@@ -30,13 +30,15 @@ def main():
     # 1. Load and prepare data (without missing values)
     X, y = load_clean_data("spambase")
     
-    # Standardize features (Lasso requires scaled features)
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
-    
     # Split into train, validation, and test sets (60 / 20 / 20)
     X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.4, random_state=42)
     X_valid, X_test, y_valid, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    
+    # Standardize features using training data only to avoid leakage
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_valid = scaler.transform(X_valid)
+    X_test = scaler.transform(X_test)
     
     print(f"Data shapes - Train: {X_train.shape}, Valid: {X_valid.shape}, Test: {X_test.shape}\n")
 
