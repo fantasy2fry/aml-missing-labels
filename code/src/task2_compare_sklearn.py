@@ -20,6 +20,11 @@ def load_clean_data(dataset_name="spambase"):
     
     # Binarize targets if needed
     unique_classes = np.unique(y)
+    if len(unique_classes) != 2:
+        raise ValueError(
+            f"Expected exactly 2 target classes in dataset '{dataset_name}', "
+            f"but found {len(unique_classes)}: {unique_classes.tolist()}"
+        )
     y = np.where(y == unique_classes[1], 1, 0)
     
     return X, y
