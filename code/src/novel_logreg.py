@@ -1,7 +1,7 @@
 import numpy as np
 from src.fista import FistaLogisticRegression
 
-def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int) -> FistaLogisticRegression:
+def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int=20) -> FistaLogisticRegression:
 
     """
     Logistic regression model combining semi-supervised learning and active learning for missing labels.
