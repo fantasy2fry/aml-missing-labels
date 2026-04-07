@@ -104,7 +104,11 @@ def main():
         print(f"-> Plot saved in 'plots_and_results' folder as 'fista_measure_{measure}.png'.\n")
         
         # 4. Train Scikit-Learn with the equivalent penalty 
-        C_val = 1.0 / best_lambda if best_lambda > 0 else 1.0
+        n_samples = len(X_train)
+        C_val = 1.0 / (best_lambda * n_samples) if best_lambda > 0 else 1.0
+        # Sklearn minimizes the sum of errors, while our FISTA minimizes the average error.
+        # Therefore, C must be scaled by n_samples: C = 1 / (lambda * N)
+        
         sklearn_model = LogisticRegression(solver='saga', C=C_val, l1_ratio=1.0, max_iter=5000, random_state=42)
         # above ideally lasso
         start_sk_time = time.time()
