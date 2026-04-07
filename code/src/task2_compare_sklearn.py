@@ -8,7 +8,7 @@ from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_sco
 from sklearn.preprocessing import StandardScaler
 import os
 
-from fista import FistaLogisticRegression
+from src.fista import FistaLogisticRegression
 
 def load_clean_data(dataset_name="spambase"):
     """Loads dataset without missing values (as requested in Task 2)"""
