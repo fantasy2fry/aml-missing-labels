@@ -1,7 +1,7 @@
 import numpy as np
-from sklearn.linear_model import LogisticRegression
+from src.fista import FistaLogisticRegression
 
-def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int) -> LogisticRegression:
+def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int) -> FistaLogisticRegression:
 
     """
     Logistic regression model combining semi-supervised learning and active learning for missing labels.
@@ -36,7 +36,7 @@ def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int) -> LogisticRegression
     training_X = labeled_X
     training_y = labeled_y
     
-    model = LogisticRegression()
+    model = FistaLogisticRegression()
     model.fit(training_X, training_y)
 
     for i in range(n_iter):
@@ -61,7 +61,7 @@ def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int) -> LogisticRegression
         training_idx = np.concatenate([labeled_idx, AL_set, SSL_set]) 
         
         # Identify the false pseudo-labeled samples
-        model = LogisticRegression()
+        model = FistaLogisticRegression()
         training_X = X[training_idx]
         training_y = y_copied[training_idx]
         model.fit(training_X, training_y)
@@ -80,7 +80,7 @@ def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int) -> LogisticRegression
     
     training_X = X[training_idx]
     training_y = y_copied[training_idx]
-    model = LogisticRegression()
+    model = FistaLogisticRegression()
     model.fit(training_X, training_y)
     return model
 

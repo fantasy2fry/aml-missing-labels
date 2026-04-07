@@ -1,5 +1,5 @@
 from pl_algorithms import Model
-from sklearn.linear_model import LogisticRegression
+from src.fista import FistaLogisticRegression
 import numpy as np
 from src.data_prep import convert_to_pl 
 
@@ -33,7 +33,7 @@ def use_saute(X: np.ndarray,y: np.ndarray, n_vars: int) -> tuple[np.ndarray, np.
 
     return X_updated, y_updated
 
-def logreg_with_saute(X: np.ndarray,y: np.ndarray, n_vars: int, use_selection: bool) -> LogisticRegression:
+def logreg_with_saute(X: np.ndarray,y: np.ndarray, n_vars: int, use_selection: bool) -> FistaLogisticRegression:
     """
     Logistic regression with data binarized by SAUTE algorithm.
 
@@ -57,7 +57,7 @@ def logreg_with_saute(X: np.ndarray,y: np.ndarray, n_vars: int, use_selection: b
     X_updated, y_updated = use_saute(X,y, n_vars)
     
     # use logistic regression on data updated by saute
-    logreg = LogisticRegression()
+    logreg = FistaLogisticRegression()
     X_to_fit = X if not(use_selection) else X_updated
     logreg.fit(X_to_fit, y_updated)
 
