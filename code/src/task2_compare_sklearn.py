@@ -141,7 +141,7 @@ def main():
                 "FISTA_Time_s": round(fista_single_time, 3),
                 "Sklearn_Time_s": round(sklearn_time, 3)
             })
-            all_comparison_results.extend(dataset_results[-1:])
+            all_comparison_results.append(dataset_results[-1])
 
         # Generate Bar Chart Comparison for this dataset
         df_dataset = pd.DataFrame(dataset_results)
