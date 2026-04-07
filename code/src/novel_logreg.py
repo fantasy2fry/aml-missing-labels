@@ -1,7 +1,13 @@
 import numpy as np
 from src.fista import FistaLogisticRegression
 
-def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int=20) -> FistaLogisticRegression:
+def novel_logreg(
+    X: np.ndarray,
+    y: np.ndarray,
+    X_val: np.ndarray,
+    y_val: np.ndarray,
+    n_iter: int = 20,
+) -> FistaLogisticRegression:
 
     """
     Logistic regression model combining semi-supervised learning and active learning for missing labels.
@@ -11,6 +17,10 @@ def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int=20) -> FistaLogisticRe
     X : np.ndarray
     y: np.ndarray
         Labels with missing values {0, 1, -1}.
+    X_val : np.ndarray
+        Validation features used for lambda selection.
+    y_val : np.ndarray
+        Validation labels used for lambda selection.
     n_iter: int
         Number of iterations, used to calculate step size 
 
@@ -38,6 +48,7 @@ def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int=20) -> FistaLogisticRe
     
     model = FistaLogisticRegression()
     model.fit(training_X, training_y)
+    model.validate(X_val, y_val, measure="balanced_accuracy")
 
     for i in range(n_iter):
 
@@ -65,6 +76,7 @@ def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int=20) -> FistaLogisticRe
         training_X = X[training_idx]
         training_y = y_copied[training_idx]
         model.fit(training_X, training_y)
+        model.validate(X_val, y_val, measure="balanced_accuracy")
         new_predicted_y = model.predict_proba(X)[:,0]
         new_binarize_y = new_predicted_y < 0.5
         mask = np.where(binarize_y != new_binarize_y)[0]
@@ -82,6 +94,7 @@ def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int=20) -> FistaLogisticRe
     training_y = y_copied[training_idx]
     model = FistaLogisticRegression()
     model.fit(training_X, training_y)
+    model.validate(X_val, y_val, measure="balanced_accuracy")
     return model
 
 
