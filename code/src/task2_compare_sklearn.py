@@ -101,7 +101,7 @@ def main():
         plt.savefig(plot1, bbox_inches='tight')
         plt.close()
         
-        print(f"-> Plot saved in 'plots' folder as 'fista_measure_{measure}.png'.\n")
+        print(f"-> Plot saved in 'plots_and_results' folder as 'fista_measure_{measure}.png'.\n")
         
         # 4. Train Scikit-Learn with the equivalent penalty 
         C_val = 1.0 / best_lambda if best_lambda > 0 else 1.0
