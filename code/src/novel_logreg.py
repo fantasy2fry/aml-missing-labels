@@ -47,7 +47,7 @@ def novel_logreg(X: np.ndarray,y: np.ndarray, n_iter: int) -> LogisticRegression
         binarize_y = predicted_y < 0.5
 
         # Build the Active Learning set 
-        mask_AL = ((unlabeled_mask) &  (predicted_y < 0.5 + step_size) & (predicted_y >0.5+step_size))
+        mask_AL = ((unlabeled_mask) &  (predicted_y < 0.5 + step_size) & (predicted_y > 0.5 - step_size))  # corrected
         AL_set = np.where(mask_AL)[0]
 
         # Build the Self Learning set 

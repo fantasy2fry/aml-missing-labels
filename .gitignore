@@ -359,3 +359,6 @@ report/*
 !report/main.tex
 
 test*
+
+plots_and_results/*
+!plots_and_results/.gitkeep
