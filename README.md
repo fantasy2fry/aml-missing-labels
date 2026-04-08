@@ -11,21 +11,22 @@ This repository contains the solution for Project 1 of the Advanced Machine Lear
 The project includes:
 1. **Missing Data Generation:** Implementation of four missing data mechanisms: MCAR, MAR1, MAR2, and MNAR.
 2. **Logistic Lasso Regression (FISTA):** A custom implementation of Logistic Regression optimized using the Fast Iterative Shrinkage-Thresholding Algorithm (FISTA) with an L1 penalty.
-3. **UnlabeledLogReg:** A custom classifier that utilizes both labeled and unlabeled data, incorporating two different algorithms for completing the missing $Y$ labels.
-4. **Benchmarking:** Comparison of our `UnlabeledLogReg` method against a **Naive method** (using only labeled data) and an **Oracle method** (using fully labeled, completely observed data).
+3. **Semi-supervised variants:** Two approaches that use unlabeled points (`novel` and `saute`), compared against a **labeled-only** baseline and an **oracle** reference.
+4. **Benchmarking:** Repeated experiments across datasets, missingness schemes, rates, and seeds, with automatic metric aggregation.
 
 ## 🗂 Repository Structure
 The project is structured into two main directories: `code/` and `report/`, adhering to the submission guidelines.
 
 * `code/data/`: Contains the 4 real-world datasets used for experiments (raw and processed).
 * `code/src/`: Core Python modules.
-  * `data_prep.py`: Data cleaning, missing value imputation, and $Y$-missing data generation schemes.
-  * `fista.py`: Contains the `fit`, `predict_proba`, and `validate` methods for the FISTA algorithm.
-  * `unlabeled_logreg.py`: Contains the `UnlabeledLogReg` class and $Y$ completion algorithms.
-  * `evaluation.py`: Functions for calculating metrics (Accuracy, F1, ROC AUC, etc.) and plotting validation curves/coefficients.
-* `code/notebooks/`: Jupyter notebooks used for data exploration and running the comprehensive experiments required for the report.
-* `code/main.py`: The main script to easily run the algorithm pipeline on new datasets.
-* `report/`: Contains the final 6-page project report detailing implementation correctness, methodology, and experiment analysis.
+  * `data_prep.py`: Dataset loading/preprocessing and missing-label generation schemes.
+  * `fista.py`: FISTA-based logistic regression implementation.
+  * `novel_logreg.py`: Iterative method for learning with missing labels.
+  * `pl_logreg.py`: SAUTE-based pseudo-labeling logistic regression utilities.
+  * `evaluation.py`: Metric computation (Recall, Precision, F1, ROC AUC, PR AUC, etc.).
+  * `data_download.py`: One-time downloader for all raw datasets from UCI.
+* `code/notebooks/`: Contains `demo.ipynb`, a Jupyter notebook for newcomers who do not know the project yet and want a guided way to run the pipeline on new data.
+* `code/main.py`: Main experiment runner (full experiment grid).
 
 ## 🚀 How to Run the Code
 
@@ -39,3 +40,32 @@ source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
 
 # Install required dependencies
 pip install -r requirements.txt
+```
+
+### 2. (Optional) Download raw data
+
+If `code/data/raw/` is empty in your clone, run:
+
+```bash
+python3 code/src/data_download.py
+```
+
+### 3. Run all experiments (parallel by default)
+
+From project root, run:
+
+```bash
+python3 code/main.py
+```
+
+This runs the full grid defined in `code/main.py` (datasets, schemes, missing rates, seeds, and methods) and uses process-level parallelization by default.
+
+> Note: the current script does not expose CLI flags for partial runs. To change the scope, edit the `DEFAULT_*` constants in `code/main.py`.
+
+### 4. Notebook quick start for new users
+
+If someone is new to this project and wants to quickly try our approach on new data, start with:
+
+- `code/notebooks/demo.ipynb`
+
+The notebook is a guided entry point that explains the workflow step by step and is the easiest way to run and adapt the pipeline interactively.
